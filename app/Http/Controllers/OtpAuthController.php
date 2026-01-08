@@ -30,6 +30,7 @@ class OtpAuthController extends Controller
     {
         $contactRaw = trim($request->input('contact'));
 
+
         // Determine channel: email or phone
         $isEmail = filter_var($contactRaw, FILTER_VALIDATE_EMAIL);
         $isPhone = preg_match('/^[0-9+\-\s()]+$/', $contactRaw); // loose phone check
@@ -70,6 +71,7 @@ class OtpAuthController extends Controller
                 ->first();
         }
 
+
         if (! $member) {
             return response()->json([
                 'success' => false,
@@ -97,6 +99,7 @@ class OtpAuthController extends Controller
             'device_name' => null,
         ]);
 
+
         // Compose message text
         $smsMessage = "Your CSI Centenary Wesley Church verification code is: {$rawCode}. It expires in {$this->otpTTLMinutes} minutes.";
 
@@ -114,7 +117,7 @@ class OtpAuthController extends Controller
                 Log::error('Failed to send OTP email: ' . $e->getMessage(), ['contact' => $contact, 'member_id' => $member->id]);
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to send email. Please try again later.'
+                    'message' => 'Failed to send email. Please try again later.' . $e
                 ], 500);
             }
         }

@@ -14,6 +14,8 @@ class Payment extends Model
         'razorpay_signature',
         'amount',
         'status',
+        'payment_mode',
+        'reference_no',
         'raw'
     ];
 

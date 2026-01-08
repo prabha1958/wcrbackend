@@ -1,11 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Http\Requests\PastorRequest;
 use App\Models\Pastor;
-use Illuminate\Http\Request;
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class PastorController extends Controller
 {
@@ -15,16 +18,19 @@ class PastorController extends Controller
      */
     public function index(Request $request)
     {
+
         $perPage = (int) $request->query('per_page', 20);
         $query = Pastor::orderBy('order_no')->orderBy('name');
 
+
+
         // optional filter: active (no leaving date or leaving date in future)
-        if ($request->boolean('active')) {
-            $query->where(function ($q) {
-                $q->whereNull('date_of_leaving')
-                    ->orWhere('date_of_leaving', '>=', now()->toDateString());
-            });
-        }
+        //  if ($request->boolean('active')) {
+        //     $query->where(function ($q) {
+        //       $q->whereNull('date_of_leaving')
+        //             ->orWhere('date_of_leaving', '>=', now()->toDateString());
+        //      });
+        //  }
 
         $list = $query->paginate($perPage);
         return response()->json(['success' => true, 'data' => $list]);

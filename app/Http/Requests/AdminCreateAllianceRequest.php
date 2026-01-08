@@ -19,8 +19,7 @@ class AdminCreateAllianceRequest extends FormRequest
         return array_merge((new \App\Http\Requests\CreateAllianceRequest)->rules(), [
             // admin may supply a member_id to attach this alliance to any member
             'member_id' => ['required', 'integer', 'exists:members,id'],
-            // admin may optionally set published flag
-            'is_published' => ['sometimes', 'boolean'],
+
         ]);
     }
 }

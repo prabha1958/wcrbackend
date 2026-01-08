@@ -78,7 +78,7 @@ class AlliancePaymentController extends Controller
                 'payment_gateway_order_id' => $razorpayOrder['id'],
                 'payment_gateway_payment_id' => null,
                 'payment_gateway_signature' => null,
-                'amount' => $amountPaise, // store as integer paise
+                'amount' => $amountPaise / 100, // store as integer paise
                 'currency' => 'INR',
                 'status' => 'created',
                 'raw' => json_encode($razorpayOrder),
@@ -172,7 +172,7 @@ class AlliancePaymentController extends Controller
         $paidAmountRupees = $paidAmountPaise / 100;
 
         // Ensure Alliance model has applyPayment that accepts AlliancePayment model and uses payment->amount or convert
-        $payment->alliance->applyPayment($payment);
+
 
         return response()->json(['success' => true, 'message' => 'Payment verified and recorded.']);
     }

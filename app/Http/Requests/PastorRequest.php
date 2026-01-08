@@ -8,9 +8,7 @@ class PastorRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // Only admins can manage pastors. Middleware also expected.
-        $user = $this->user();
-        return $user && method_exists($user, 'isAdmin') && $user->isAdmin();
+        return true;
     }
 
     public function rules(): array

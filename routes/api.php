@@ -13,8 +13,8 @@ use App\Http\Controllers\AlliancePaymentController;
 use App\Http\Controllers\Admin\AllianceController as AdminAllianceController;
 use App\Http\Controllers\PastorateComMemberController;
 use App\Http\Controllers\EventController;
-use App\Http\Controllers\AnnouncementController;
-use App\Http\Controllers\PastorController;
+use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
+use App\Http\Controllers\Admin\PastorController as AdminPastorController;
 use App\Http\Controllers\PoorFeedingController;
 use App\Http\Controllers\MenFellowshipController;
 use App\Http\Controllers\WomenFellowshipController;
@@ -56,7 +56,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->name('admin.')->g
     Route::put('members/{member}', [AdminMembersController::class, 'update'])->name('members.update');
     Route::patch('members/{member}', [AdminMembersController::class, 'update']);
     Route::delete('members/{member}', [AdminMembersController::class, 'destroy'])->name('members.destroy');
-    Route::post('members', [AdminMembersController::class, 'store'])->name('members.store');
+    Route::post('members',  [AdminMembersController::class, 'store'])->name('members.store');
+    Route::patch('members/{member}/contact', [AdminMembersController::class, 'updateContact']);
+    Route::patch('members/{member}/deactivate', [AdminMembersController::class, 'deactivate']);
 });
 
 
@@ -69,8 +71,13 @@ Route::middleware('auth:sanctum')->group(function () {
 // Admin routes (admin middleware)
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
     Route::post('subscriptions/{member}/pay', [AdminSubscriptionController::class, 'payOnBehalf']);
+    Route::post('subscriptions/verify-payment', [AdminSubscriptionController::class, 'verifyPayment']);
     Route::post('subscriptions/{member}/create', [AdminSubscriptionController::class, 'createSubscription']);
     Route::get('subscriptions/{member}/due', [AdminSubscriptionController::class, 'due']);
+    Route::get('subscriptions', [AdminSubscriptionController::class, 'index']);
+    Route::get('subscriptions/{member}', [AdminSubscriptionController::class, 'show']);
+    Route::get('payments/{payment}/receipt', [AdminSubscriptionController::class, 'show']);
+    Route::post('subscriptions/{member}/pay-offline', [AdminSubscriptionController::class, 'payOffline']);
 });
 
 Route::post('razorpay/webhook', [RazorpayWebhookController::class, 'handle']); // webhook: verify secret
@@ -80,19 +87,20 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('alliances', [AllianceController::class, 'store'])->name('alliances.store');
 });
 
-Route::prefix('admin')->middleware(['auth:sanctum', 'is_admin'])->group(function () {
+Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function () {
     // Option A: reuse same controller method but hit a separate endpoint
     //  Route::post('alliances', [AllianceController::class, 'storeByAdmin'])
     //     ->name('admin.alliances.store');
 
     // Option B (alternative): use separate Admin controller (uncomment if you want)
     Route::post('alliances', [AdminAllianceController::class, 'store'])->name('admin.alliances.store');
+    Route::get('alliances', [AdminAllianceController::class, 'index'])->name('admin.alliancees.index');
+    Route::get('alliances/{alliance}', [AdminAllianceController::class, 'show'])->name('admin.alliances.show');
+    Route::patch('alliances/{alliance}', [AdminAllianceController::class, 'update'])->name('admin.alliances.update');
+    Route::patch('alliances/{alliance}/publish', [AdminAllianceController::class, 'togglePublish'])->name('admin.alliances.publish');
 });
 
-// Admin routes (auth + admin middleware)
-Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::post('alliances', [AdminAllianceController::class, 'store'])->name('alliances.store');
-});
+
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('alliances/{alliance}/payments/create-order', [AlliancePaymentController::class, 'createOrder'])
@@ -121,13 +129,12 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
 
 // Admin-only routes (CRUD)
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
-    Route::apiResource('announcements', AnnouncementController::class)
-        ->except(['index', 'show']); // since those are public
+    Route::apiResource('announcements', AdminAnnouncementController::class); // since those are public
 });
 
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
-    Route::apiResource('pastors', PastorController::class)->except(['index', 'show']);
+    Route::apiResource('pastors', AdminPastorController::class)->except(['destroy']);
 });
 
 
@@ -166,3 +173,10 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
 Route::get('members/birthdays/today', [BirthdayController::class, 'today']);
 
 Route::get('members/birthdays/upcoming', [BirthdayController::class, 'upcomingWeek']);
+
+Route::get('/check-user', function (Illuminate\Http\Request $request) {
+    return response()->json([
+        'authenticated_user' => $request->user(),
+        'token' => $request->bearerToken(),
+    ]);
+})->middleware('auth:sanctum');

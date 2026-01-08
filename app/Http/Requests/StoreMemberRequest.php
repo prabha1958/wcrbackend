@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreMemberRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class StoreMemberRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,25 +22,43 @@ class StoreMemberRequest extends FormRequest
      */
     public function rules(): array
     {
-        // For update, you might want to make some fields sometimes|required — keep it flexible.
         return [
-            'family_name'         => ['sometimes', 'nullable', 'string', 'max:255'],
-            'first_name'          => ['sometimes', 'nullable', 'string', 'max:255'],
-            'last_name'           => ['sometimes', 'nullable', 'string', 'max:255'],
-            'date_of_birth'       => ['sometimes', 'nullable', 'date'],
-            'wedding_date'        => ['sometimes', 'nullable', 'date'],
+            'family_name'         => ['required', 'string', 'max:255'],
+            'first_name'          => ['required', 'string', 'max:255'],
+            'middle_name'         => ['nullable', 'string', 'max:255'],
+            'last_name'           => ['nullable', 'string', 'max:255'],
+            'couple_pic' => ['nullable', 'file', 'image', 'max:2048'],
+            'date_of_birth'       => ['required', 'date'],
+            'wedding_date'       => ['nullable', 'date'],
+            'area_no'       => ['required', 'string', 'max:2'],
+            'email'               => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('members', 'email'),
+            ],
+            'mobile_number'       => [
+                'required',
+                'string',
+                'min:10',
+                'max:10',
+                Rule::unique('members', 'mobile_number'),
+            ],
+            'gender'              => ['required', 'string', 'max:255'],
+            'spouse_name'         =>  ['nullable', 'string', 'max:255'],
+            'occupation'          => ['nullable', 'string', 'max:255'],
+            'status'              => ['required', Rule::in(['in_service', 'retired', 'other'])],
+            'profile_photo'       => ['nullable', 'file', 'image', 'max:2048'],
+            'membership_fee'      => ['nullable', 'numeric', 'min:0'],
+            'address_flat_number' => ['nullable', 'string', 'max:255'],
+            'address_premises'    => ['nullable', 'string', 'max:255'],
+            'address_area'        => ['nullable', 'string', 'max:255'],
+            'address_landmark'    => ['nullable', 'string', 'max:255'],
+            'address_city'        => ['nullable', 'string', 'max:255'],
+            'address_pin'         => ['nullable', 'digits:6'],
 
-            // NEW fields
-            'spouse_name'         => ['sometimes', 'nullable', 'string', 'max:255'],
-            'gender'              => ['sometimes', 'nullable', 'in:male,female,other'],
-            'status_flag'         => ['sometimes', 'boolean'],
 
-            // contact fields (example)
-            'email'               => ['sometimes', 'nullable', 'email', 'max:255'],
-            'mobile_number'       => ['sometimes', 'nullable', 'string', 'max:50'],
 
-            // file/photo if present in your app
-            'profile_photo'       => ['sometimes', 'nullable', 'image', 'max:5120'],
         ];
     }
 

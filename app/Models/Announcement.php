@@ -11,10 +11,13 @@ class Announcement extends Model
         'title',
         'description',
         'published',
+        'picture',
+        'exp_date'
     ];
 
     protected $casts = [
         'date' => 'date',
+        'exp_date' => 'date',
         'published' => 'boolean',
     ];
 }

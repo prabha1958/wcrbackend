@@ -12,10 +12,37 @@ class Subscription extends Model
         'financial_year',
         'monthly_fee',
         // months columns will be mass assigned in controller appropriately
+
+        // payment columns
+        'apr_payment_id',
+        'apr_paid_at',
+        'may_payment_id',
+        'may_paid_at',
+        'jun_payment_id',
+        'jun_paid_at',
+        'jul_payment_id',
+        'jul_paid_at',
+        'aug_payment_id',
+        'aug_paid_at',
+        'sep_payment_id',
+        'sep_paid_at',
+        'oct_payment_id',
+        'oct_paid_at',
+        'nov_payment_id',
+        'nov_paid_at',
+        'dec_payment_id',
+        'dec_paid_at',
+        'jan_payment_id',
+        'jan_paid_at',
+        'feb_payment_id',
+        'feb_paid_at',
+        'mar_payment_id',
+        'mar_paid_at',
+
     ];
 
     protected $casts = [
-        // add casts if needed
+        'raw' => 'array',
     ];
 
     public function member()

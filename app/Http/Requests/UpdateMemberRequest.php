@@ -10,33 +10,34 @@ class UpdateMemberRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // Only admins will reach this request thanks to middleware, but keep check if desired:
-        $user = $this->user();
-        return $user && method_exists($user, 'isAdmin') && $user->isAdmin();
+        return true;
     }
-
     public function rules(): array
     {
         $memberId = $this->route('member')?->id;
 
         return [
-            'family_name'         => ['sometimes', 'nullable', 'string', 'max:255'],
-            'first_name'          => ['sometimes', 'nullable', 'string', 'max:255'],
-            'last_name'           => ['sometimes', 'nullable', 'string', 'max:255'],
-            'date_of_birth'       => ['sometimes', 'nullable', 'date'],
-            'wedding_date'        => ['sometimes', 'nullable', 'date'],
+            'family_name'         => ['nullable', 'string', 'max:255'],
+            'first_name'          => ['nullable', 'string', 'max:255'],
+            'last_name'           => ['nullable', 'string', 'max:255'],
+            'date_of_birth'       => ['nullable', 'date'],
+            'wedding_date'        => ['nullable', 'date'],
 
             // NEW fields
-            'spouse_name'         => ['sometimes', 'nullable', 'string', 'max:255'],
-            'gender'              => ['sometimes', 'nullable', 'in:male,female,other'],
-            'status_flag'         => ['sometimes', 'boolean'],
+            'spouse_name'         => ['nullable', 'string', 'max:255'],
+            'gender'              => ['nullable', 'in:male,female,other'],
+            'status_flag'         => ['required', 'boolean'],
 
-            // contact fields (example)
-            'email'               => ['sometimes', 'nullable', 'email', 'max:255'],
-            'mobile_number'       => ['sometimes', 'nullable', 'string', 'max:50'],
 
             // file/photo if present in your app
-            'profile_photo'       => ['sometimes', 'nullable', 'image', 'max:5120'],
+            'profile_photo'       => ['nullable', 'image', 'max:5120'],
+            'couple_pic' => ['nullable', 'file', 'image', 'max:2048'],
+            'address_flat_number' => ['nullable', 'string', 'max:255'],
+            'address_premises'    => ['nullable', 'string', 'max:255'],
+            'address_area'        => ['nullable', 'string', 'max:255'],
+            'address_landmark'    => ['nullable', 'string', 'max:255'],
+            'address_city'        => ['nullable', 'string', 'max:255'],
+            'address_pin'         => ['nullable', 'digits:6'],
         ];
     }
 

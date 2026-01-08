@@ -25,10 +25,10 @@ class Member extends Model
         'date_of_birth',
         'email',
         'mobile_number',
-        'residential_address',
         'occupation',
         'status',
         'profile_photo',
+        'couple_pic',
         'role',
         'membership_fee',
         'area_no',
@@ -36,6 +36,12 @@ class Member extends Model
         'spouse_name',
         'gender',
         'status_flag',
+        'address_flat_number',
+        'address_premises',
+        'address_area',
+        'address_landmark',
+        'address_city',
+        'address_pin',
     ];
 
 
@@ -46,13 +52,16 @@ class Member extends Model
         'wedding_date' => 'date',
         'status_flag' => 'boolean',
 
-    ];
 
+    ];
     public function isAdmin(): bool
     {
-        return $this->role === self::ROLE_ADMIN;
+        return in_array(strtolower($this->role), [
+            'admin',
+            'administrator',
+            'super_admin'
+        ]);
     }
-
     /**
      * Subscriptions for this member.
      * Assumes subscriptions table has member_id FK.
@@ -87,5 +96,15 @@ class Member extends Model
     {
         // Sum 'total' column across related subscriptions; returns float 0.00 if none.
         return (float) $this->subscriptions()->sum('total');
+    }
+
+    public function getResidentialAddressAttribute()
+    {
+        return $this->residential_address_json ?? null;
+    }
+
+    public function setResidentialAddressAttribute($value)
+    {
+        $this->attributes['residential_address_json'] = json_encode($value);
     }
 }

@@ -17,9 +17,11 @@ class AnnouncementRequest extends FormRequest
     {
         return [
             'date' => ['required', 'date'],
+            'exp_date' => ['required', 'date'],
+            'picture' => ['sometimes', 'image', 'max:5120'],
             'title' => ['nullable', 'string', 'max:255'],
             'description' => ['required', 'string'],
-            'published' => ['sometimes', 'boolean'],
+
         ];
     }
 }
